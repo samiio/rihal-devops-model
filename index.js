@@ -23,6 +23,19 @@ class Class extends Record {
       );
     }, 0);
   }
+
+  getAverageAge(students) {
+    // filter to find students in class
+    const classStudents = students.filter((student) => {
+      return student.classId.includes(this.id);
+    });
+
+    // reduce to find average age
+    const totalYears = classStudents.reduce((total, student) => {
+      return total + student.getAge();
+    }, 0);
+    return totalYears / classStudents.length;
+  }
 }
 
 class Country extends Record {
