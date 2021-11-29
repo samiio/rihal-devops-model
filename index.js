@@ -207,4 +207,14 @@ const studentsController = (() => {
   };
 })();
 
-module.exports = Class;
+module.exports = {
+  Class,
+  Country,
+  Student,
+  Classes,
+  Countries,
+  Students,
+  classesController,
+  countriesController,
+  studentsController,
+};
