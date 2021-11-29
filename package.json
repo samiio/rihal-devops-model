@@ -7,8 +7,10 @@
     "test": "jest"
   },
   "keywords": [],
-  "author": "",
+  "author": "Sami Ali",
   "license": "ISC",
+  "url": "https://github.com/samiio/rihal-devops-model",
+  "homepage": "https://github.com/samiio/rihal-devops-model#readme",
   "devDependencies": {
     "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "^15.0.0",
