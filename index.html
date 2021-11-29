@@ -22,12 +22,10 @@
 
         classesController.save(myClasses);
 
-        const testClasses = classesController.getAll();
-        const testClassTable = new Classes();
-        testClassTable.table = testClasses;
+        const testClasses = new Classes();
+        testClasses.table = classesController.getAll();
         console.log(myClasses.table);
-        console.log(testClasses);
-        console.log(testClassTable.table);
+        console.log(testClasses.table);
     </script>
 </body>
 </html>

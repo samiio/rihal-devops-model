@@ -2,15 +2,15 @@
 
 class Record {
   static count = 0;
-  constructor(name) {
-    this.id = ++this.constructor.count;
+  constructor(name, id = ++this.constructor.count) {
+    this.id = id;
     this.name = name;
   }
 }
 
 class Class extends Record {
-  constructor(name) {
-    super(name);
+  constructor(name, id) {
+    super(name, id);
   }
 
   getCount(studentsTable) {
@@ -39,8 +39,8 @@ class Class extends Record {
 }
 
 class Country extends Record {
-  constructor(name) {
-    super(name);
+  constructor(name, id) {
+    super(name, id);
   }
 
   getCount(studentsTable) {
@@ -56,8 +56,8 @@ class Country extends Record {
 }
 
 class Student extends Record {
-  constructor(name, dob) {
-    super(name);
+  constructor(name, dob, id) {
+    super(name, id);
     this.dob = dob;
     this.classId = [];
     this.countryId = [];
@@ -142,9 +142,7 @@ class Students extends Table {
 
 const classesController = (() => {
   const _JSONToClass = (jsonClass) => {
-    const aClass = new Class(jsonClass.name);
-    aClass.id = jsonClass.id;
-    return aClass;
+    return new Class(jsonClass.name, jsonClass.id);
   };
 
   const save = (classes) => {
