@@ -56,11 +56,11 @@ class Country extends Record {
 }
 
 class Student extends Record {
-  constructor(name, dob, id) {
+  constructor(name, dob, id, classId = [], countryId = []) {
     super(name, id);
     this.dob = dob;
-    this.classId = [];
-    this.countryId = [];
+    this.classId = classId;
+    this.countryId = countryId;
   }
 
   getAge() {
@@ -160,6 +160,48 @@ const classesController = (() => {
   };
 })();
 
-const countriesController = (() => {})();
+const countriesController = (() => {
+  const _JSONToCountry = (jsonCountry) => {
+    return new Country(jsonCountry.name, jsonCountry.id);
+  };
 
-const studentsController = (() => {})();
+  const save = (countries) => {
+    localStorage.setItem('countries', JSON.stringify(countries));
+  };
+
+  const getAll = () => {
+    const countries = JSON.parse(localStorage.getItem('countries'));
+    return countries.table.map((country) => _JSONToCountry(country));
+  };
+
+  return {
+    save,
+    getAll,
+  };
+})();
+
+const studentsController = (() => {
+  const _JSONToStudent = (jsonStudent) => {
+    return new Student(
+      jsonStudent.name,
+      jsonStudent.dob,
+      jsonStudent.id,
+      jsonStudent.classId,
+      jsonStudent.countryId
+    );
+  };
+
+  const save = (students) => {
+    localStorage.setItem('students', JSON.stringify(students));
+  };
+
+  const getAll = () => {
+    const students = JSON.parse(localStorage.getItem('students'));
+    return students.table.map((student) => _JSONToStudent(student));
+  };
+
+  return {
+    save,
+    getAll,
+  };
+})();
