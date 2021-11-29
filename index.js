@@ -137,3 +137,31 @@ class Students extends Table {
     return totalYears / this.table.length;
   }
 }
+
+/******************************** Controllers ********************************/
+
+const classesController = (() => {
+  const _JSONToClass = (jsonClass) => {
+    const aClass = new Class(jsonClass.name);
+    aClass.id = jsonClass.id;
+    return aClass;
+  };
+
+  const save = (classes) => {
+    localStorage.setItem('classes', JSON.stringify(classes));
+  };
+
+  const getAll = () => {
+    const classes = JSON.parse(localStorage.getItem('classes'));
+    return classes.table.map((aClass) => _JSONToClass(aClass));
+  };
+
+  return {
+    save,
+    getAll,
+  };
+})();
+
+const countriesController = (() => {})();
+
+const studentsController = (() => {})();

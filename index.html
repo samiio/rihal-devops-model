@@ -10,5 +10,24 @@
 </head>
 <body>
     
+    <script>
+        const bio = new Class('Biology');
+        const math = new Class('Mathematics');
+        const myClasses = new Classes();
+        myClasses.add(bio);
+        myClasses.add(math);
+
+        console.table(myClasses.table);
+
+
+        classesController.save(myClasses);
+
+        const testClasses = classesController.getAll();
+        const testClassTable = new Classes();
+        testClassTable.table = testClasses;
+        console.log(myClasses.table);
+        console.log(testClasses);
+        console.log(testClassTable.table);
+    </script>
 </body>
 </html>
