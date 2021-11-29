@@ -24,3 +24,22 @@ To avoid overengineering and for simplicities sake:
 - All code is kept in a single file
 - Data will be stored in the user's local storage
   - i.e., no backend frameworks used
+
+## Installation
+
+`npm i rihal-devops-model --save`
+
+## Usage
+
+```
+import {
+  Class,
+  Country,
+  Student,
+  Classes,
+  Countries,
+  Students,
+} from rihal-devops-model;
+```
+
+See `index.js` for more
