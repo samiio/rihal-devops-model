@@ -1,10 +1,11 @@
 /******************************** Data objects *******************************/
 
 class Record {
-  static count = 0;
-  constructor(name, id = ++this.constructor.count) {
+  static count = 1;
+  constructor(name, id = this.constructor.count) {
     this.id = id;
     this.name = name;
+    ++this.constructor.count;
   }
 }
 
@@ -96,7 +97,7 @@ class Table {
   }
 
   add(newRecord) {
-    this.table.push(newRecord);
+    if (!this.table.includes(newRecord.id)) this.table.push(newRecord);
   }
 
   remove(id) {
@@ -205,3 +206,5 @@ const studentsController = (() => {
     getAll,
   };
 })();
+
+module.exports = Class;
