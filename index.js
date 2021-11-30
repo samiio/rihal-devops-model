@@ -1,11 +1,40 @@
+/*********************************** PubSub **********************************/
+
+/**
+ * A super-basic Javascript (publish subscribe) pattern
+ * src: https://gist.github.com/learncodeacademy/777349747d8382bfb722
+ */
+var events = {
+  events: {},
+  on: function (eventName, fn) {
+    this.events[eventName] = this.events[eventName] || [];
+    this.events[eventName].push(fn);
+  },
+  off: function (eventName, fn) {
+    if (this.events[eventName]) {
+      for (var i = 0; i < this.events[eventName].length; i++) {
+        if (this.events[eventName][i] === fn) {
+          this.events[eventName].splice(i, 1);
+          break;
+        }
+      }
+    }
+  },
+  emit: function (eventName, data) {
+    if (this.events[eventName]) {
+      this.events[eventName].forEach(function (fn) {
+        fn(data);
+      });
+    }
+  },
+};
+
 /******************************** Data objects *******************************/
 
 class Record {
-  static count = 1;
-  constructor(name, id = this.constructor.count) {
+  constructor(name, id = null) {
     this.id = id;
     this.name = name;
-    ++this.constructor.count;
   }
 }
 
@@ -92,12 +121,14 @@ class Student extends Record {
 /******************************* Table objects *******************************/
 
 class Table {
+  static count = 0;
   constructor() {
     this.table = [];
   }
 
   add(newRecord) {
-    if (!this.table.includes(newRecord.id)) this.table.push(newRecord);
+    newRecord.id = ++this.constructor.count;;
+    this.table.push(newRecord);
   }
 
   remove(id) {
@@ -118,11 +149,21 @@ class Classes extends Table {
   constructor() {
     super();
   }
+
+  remove(id) {
+    super.remove(id);
+    if (!this.table.includes(id)) events.emit('ClassRemove', id);
+  }
 }
 
 class Countries extends Table {
   constructor() {
     super();
+  }
+
+  remove(id) {
+    super.remove(id);
+    if (!this.table.includes(id)) events.emit('CountriesRemove', id);
   }
 }
 
@@ -136,6 +177,18 @@ class Students extends Table {
       return total + student.getAge();
     }, 0);
     return totalYears / this.table.length;
+  }
+
+  removeAllInstancesOfClass(id) {
+    this.table.forEach((student) => {
+      student.classId = student.classId.filter((el) => el !== id);
+    });
+  }
+
+  removeAllInstancesOfCountry(id) {
+    this.table.forEach((student) => {
+      student.countryId = student.countryId.filter((el) => el !== id);
+    });
   }
 }
 
@@ -175,6 +228,10 @@ const countriesController = (() => {
     return countries.table.map((country) => _JSONToCountry(country));
   };
 
+  // events.on('CountriesRemove', (id) => {
+  //   // remove all instances
+  // });
+
   return {
     save,
     getAll,
@@ -207,14 +264,14 @@ const studentsController = (() => {
   };
 })();
 
-module.exports = {
-  Class,
-  Country,
-  Student,
-  Classes,
-  Countries,
-  Students,
-  classesController,
-  countriesController,
-  studentsController,
-};
+// module.exports = {
+//   Class,
+//   Country,
+//   Student,
+//   Classes,
+//   Countries,
+//   Students,
+//   classesController,
+//   countriesController,
+//   studentsController,
+// };
