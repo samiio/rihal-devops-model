@@ -1,34 +1,3 @@
-/*********************************** PubSub **********************************/
-
-/**
- * A super-basic Javascript (publish subscribe) pattern
- * src: https://gist.github.com/learncodeacademy/777349747d8382bfb722
- */
-var events = {
-  events: {},
-  on: function (eventName, fn) {
-    this.events[eventName] = this.events[eventName] || [];
-    this.events[eventName].push(fn);
-  },
-  off: function (eventName, fn) {
-    if (this.events[eventName]) {
-      for (var i = 0; i < this.events[eventName].length; i++) {
-        if (this.events[eventName][i] === fn) {
-          this.events[eventName].splice(i, 1);
-          break;
-        }
-      }
-    }
-  },
-  emit: function (eventName, data) {
-    if (this.events[eventName]) {
-      this.events[eventName].forEach(function (fn) {
-        fn(data);
-      });
-    }
-  },
-};
-
 /******************************** Data objects *******************************/
 
 class Record {
@@ -127,21 +96,16 @@ class Table {
   }
 
   add(newRecord) {
-    newRecord.id = ++this.constructor.count;;
+    newRecord.id = ++this.constructor.count;
     this.table.push(newRecord);
   }
 
   remove(id) {
-    if (this.table.includes(id)) {
-      this.table = this.table.filter((el) => el.id !== id);
-    }
+    this.table = this.table.filter((el) => el.id !== id);
   }
 
   getRecordById(id) {
-    if (this.table.includes(id)) {
-      return this.table.find((el) => el.id === id);
-    }
-    return null;
+    return this.table.find((el) => el.id === id);
   }
 }
 
@@ -149,21 +113,11 @@ class Classes extends Table {
   constructor() {
     super();
   }
-
-  remove(id) {
-    super.remove(id);
-    if (!this.table.includes(id)) events.emit('ClassRemove', id);
-  }
 }
 
 class Countries extends Table {
   constructor() {
     super();
-  }
-
-  remove(id) {
-    super.remove(id);
-    if (!this.table.includes(id)) events.emit('CountriesRemove', id);
   }
 }
 
@@ -192,53 +146,23 @@ class Students extends Table {
   }
 }
 
-/******************************** Controllers ********************************/
+/******************************** Controller *********************************/
 
-const classesController = (() => {
+const appController = (() => {
+  // init
+  let myClasses = getClassesFromStorage();
+  let myCountries = getCountriesFromStorage();
+  let myStudents = getStudentsFromStorage();
+  window.onbeforeunload = () => _save();
+
   const _JSONToClass = (jsonClass) => {
     return new Class(jsonClass.name, jsonClass.id);
   };
 
-  const save = (classes) => {
-    localStorage.setItem('classes', JSON.stringify(classes));
-  };
-
-  const getAll = () => {
-    const classes = JSON.parse(localStorage.getItem('classes'));
-    return classes.table.map((aClass) => _JSONToClass(aClass));
-  };
-
-  return {
-    save,
-    getAll,
-  };
-})();
-
-const countriesController = (() => {
   const _JSONToCountry = (jsonCountry) => {
     return new Country(jsonCountry.name, jsonCountry.id);
   };
 
-  const save = (countries) => {
-    localStorage.setItem('countries', JSON.stringify(countries));
-  };
-
-  const getAll = () => {
-    const countries = JSON.parse(localStorage.getItem('countries'));
-    return countries.table.map((country) => _JSONToCountry(country));
-  };
-
-  // events.on('CountriesRemove', (id) => {
-  //   // remove all instances
-  // });
-
-  return {
-    save,
-    getAll,
-  };
-})();
-
-const studentsController = (() => {
   const _JSONToStudent = (jsonStudent) => {
     return new Student(
       jsonStudent.name,
@@ -249,18 +173,84 @@ const studentsController = (() => {
     );
   };
 
-  const save = (students) => {
-    localStorage.setItem('students', JSON.stringify(students));
+  const _save = () => {
+    localStorage.setItem('classes', JSON.stringify(myClasses));
+    localStorage.setItem('countries', JSON.stringify(myCountries));
+    localStorage.setItem('students', JSON.stringify(myStudents));
   };
 
-  const getAll = () => {
+  const getClassesFromStorage = () => {
+    const classes = JSON.parse(localStorage.getItem('classes'));
+    return classes.table.map((aClass) => _JSONToClass(aClass));
+  };
+
+  const getCountriesFromStorage = () => {
+    const countries = JSON.parse(localStorage.getItem('countries'));
+    return countries.table.map((country) => _JSONToCountry(country));
+  };
+
+  const getStudentsFromStorage = () => {
     const students = JSON.parse(localStorage.getItem('students'));
     return students.table.map((student) => _JSONToStudent(student));
   };
 
+  const addClass = (name) => {
+    const newClass = new Class(name);
+    myClasses.add(newClass);
+  };
+
+  const addCountry = (name) => {
+    const newCountry = new Country(name);
+    myCountries.add(newCountry);
+  };
+
+  const addStudent = (name, dob, classId, countryId) => {
+    const newStudent = new Student(name, dob, classId, countryId);
+    myStudents.add(newStudent);
+  };
+
+  const deleteClass = (id) => {
+    myClasses.remove(id);
+    myStudents.removeAllInstancesOfClass(id);
+  };
+
+  const deleteCountry = (id) => {
+    myCountries.remove(id);
+    myStudents.removeAllInstancesOfCountry(id);
+  };
+
+  const deleteStudent = (id) => {
+    myStudents.remove(id);
+  };
+
+  const editClass = (id, name) => {
+    const aClass = myClasses.getRecordById(id);
+    aClass.name = name;
+  };
+
+  const editCountry = (id, name) => {
+    const country = myCountries.getRecordById(id);
+    country.name = name;
+  };
+
+  const editStudent = (id, name, dob, classId, countryId) => {
+    const student = myStudents.getRecordById(id);
+    student.name = name;
+    student.dob = dob;
+    student.classId = classId;
+    student.countryId = countryId;
+  };
+
   return {
-    save,
-    getAll,
+    addClass,
+    addCountry,
+    addStudent,
+    deleteClass,
+    deleteCountry,
+    deleteStudent,
+    editClass,
+    editCountry,
+    editStudent,
   };
 })();
 
@@ -271,7 +261,5 @@ const studentsController = (() => {
 //   Classes,
 //   Countries,
 //   Students,
-//   classesController,
-//   countriesController,
-//   studentsController,
+//   appController,
 // };
