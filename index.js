@@ -1,3 +1,34 @@
+/*********************************** PubSub **********************************/
+
+/**
+ * A super-basic Javascript (publish subscribe) pattern
+ * src: https://gist.github.com/learncodeacademy/777349747d8382bfb722
+ */
+var events = {
+  events: {},
+  on: function (eventName, fn) {
+    this.events[eventName] = this.events[eventName] || [];
+    this.events[eventName].push(fn);
+  },
+  off: function (eventName, fn) {
+    if (this.events[eventName]) {
+      for (var i = 0; i < this.events[eventName].length; i++) {
+        if (this.events[eventName][i] === fn) {
+          this.events[eventName].splice(i, 1);
+          break;
+        }
+      }
+    }
+  },
+  emit: function (eventName, data) {
+    if (this.events[eventName]) {
+      this.events[eventName].forEach(function (fn) {
+        fn(data);
+      });
+    }
+  },
+};
+
 /******************************** Data objects *******************************/
 
 class Record {
@@ -23,9 +54,9 @@ class Class extends Record {
     }, 0);
   }
 
-  getAverageAge(students) {
+  getAverageAge(studentsTable) {
     // filter to find students in class
-    const classStudents = students.filter((student) => {
+    const classStudents = studentsTable.filter((student) => {
       return student.classId.includes(this.id);
     });
 
@@ -91,8 +122,8 @@ class Student extends Record {
 
 class Table {
   static count = 0;
-  constructor() {
-    this.table = [];
+  constructor(records = []) {
+    this.table = [...records];
   }
 
   add(newRecord) {
@@ -146,24 +177,18 @@ class Students extends Table {
   }
 }
 
-/******************************** Controller *********************************/
+/******************************** JSON Parser ********************************/
 
-const appController = (() => {
-  // init
-  let myClasses = getClassesFromStorage();
-  let myCountries = getCountriesFromStorage();
-  let myStudents = getStudentsFromStorage();
-  window.onbeforeunload = () => _save();
-
-  const _JSONToClass = (jsonClass) => {
+const jsonParser = (() => {
+  const JSONToClass = (jsonClass) => {
     return new Class(jsonClass.name, jsonClass.id);
   };
 
-  const _JSONToCountry = (jsonCountry) => {
+  const JSONToCountry = (jsonCountry) => {
     return new Country(jsonCountry.name, jsonCountry.id);
   };
 
-  const _JSONToStudent = (jsonStudent) => {
+  const JSONToStudent = (jsonStudent) => {
     return new Student(
       jsonStudent.name,
       jsonStudent.dob,
@@ -173,84 +198,234 @@ const appController = (() => {
     );
   };
 
-  const _save = () => {
-    localStorage.setItem('classes', JSON.stringify(myClasses));
-    localStorage.setItem('countries', JSON.stringify(myCountries));
-    localStorage.setItem('students', JSON.stringify(myStudents));
+  return { JSONToClass, JSONToCountry, JSONToStudent };
+})();
+
+/******************************* Repositories ********************************/
+
+const classRepository = (() => {
+  const getClasses = () => {
+    const classes = new Classes();
+    const data = localStorage.getItem('classes');
+    if (data !== 'undefined') {
+      classes.table = JSON.parse(data).table.map((aClass) =>
+        jsonParser.JSONToClass(aClass)
+      );
+    }
+    return classes;
   };
 
-  const getClassesFromStorage = () => {
-    const classes = JSON.parse(localStorage.getItem('classes'));
-    return classes.table.map((aClass) => _JSONToClass(aClass));
-  };
-
-  const getCountriesFromStorage = () => {
-    const countries = JSON.parse(localStorage.getItem('countries'));
-    return countries.table.map((country) => _JSONToCountry(country));
-  };
-
-  const getStudentsFromStorage = () => {
-    const students = JSON.parse(localStorage.getItem('students'));
-    return students.table.map((student) => _JSONToStudent(student));
+  const updateClasses = (classes) => {
+    localStorage.setItem('classes', JSON.stringify(classes));
+    events.emit('classes', getClasses);
   };
 
   const addClass = (name) => {
-    const newClass = new Class(name);
-    myClasses.add(newClass);
-  };
-
-  const addCountry = (name) => {
-    const newCountry = new Country(name);
-    myCountries.add(newCountry);
-  };
-
-  const addStudent = (name, dob, classId, countryId) => {
-    const newStudent = new Student(name, dob, classId, countryId);
-    myStudents.add(newStudent);
+    const classes = getClasses();
+    classes.add(new Class(name));
+    console.log(classes);
+    updateClasses(classes);
   };
 
   const deleteClass = (id) => {
-    myClasses.remove(id);
-    myStudents.removeAllInstancesOfClass(id);
-  };
-
-  const deleteCountry = (id) => {
-    myCountries.remove(id);
-    myStudents.removeAllInstancesOfCountry(id);
-  };
-
-  const deleteStudent = (id) => {
-    myStudents.remove(id);
+    const classes = getClasses();
+    classes.remove(id);
+    // myStudents.removeAllInstancesOfClass(id);
   };
 
   const editClass = (id, name) => {
-    const aClass = myClasses.getRecordById(id);
+    const classes = getClasses();
+    const aClass = classes.getRecordById(id);
     aClass.name = name;
+    updateClasses(classes);
+  };
+
+  const getCount = (targetId, classTable, studentsTable) => {
+    const target = classTable.getRecordById(targetId);
+    return target.getCount(studentsTable);
+  };
+
+  const getAverageAge = (targetId, classTable, studentsTable) => {
+    const target = classTable.getRecordById(targetId);
+    return target.getAverageAge(studentsTable);
+  };
+
+  return {
+    getCount,
+    getAverageAge,
+    getClasses,
+    addClass,
+    editClass,
+    deleteClass,
+  };
+})();
+
+const countryRepository = (() => {
+  const getCountries = () => {
+    const countries = JSON.parse(localStorage.getItem('countries'));
+    return countries
+      ? countries.table.map((country) => jsonParser.JSONToCountry(country))
+      : null;
+  };
+
+  const updateCountries = (countries) => {
+    localStorage.setItem('countries', JSON.stringify(countries));
+    events.emit('countries', getCountries);
+  };
+
+  const addCountry = (name) => {
+    const countries = getCountries();
+    countries.add(new Country(name));
+    updateCountries(countries);
+  };
+
+  const deleteCountry = (id) => {
+    const countries = getCountries();
+    countries.remove(id);
+    // myStudents.removeAllInstancesOfCountry(id);
   };
 
   const editCountry = (id, name) => {
-    const country = myCountries.getRecordById(id);
+    const countries = getCountries();
+    const country = countries.getRecordById(id);
     country.name = name;
+    updateCountries(countries);
+  };
+
+  const getCount = (targetId, countryTable, studentsTable) => {
+    const target = countryTable.getRecordById(targetId);
+    return target.getCount(studentsTable);
+  };
+
+  return { getCount, getCountries, addCountry, editCountry, deleteCountry };
+})();
+
+const studentsRepository = (() => {
+  const getStudents = () => {
+    const students = JSON.parse(localStorage.getItem('students'));
+    return students
+      ? students.table.map((student) => jsonParser.JSONToStudent(student))
+      : null;
+  };
+
+  const updateStudents = (students) => {
+    localStorage.setItem('students', JSON.stringify(students));
+    events.emit('students', getStudents);
+  };
+
+  const addStudent = (name, dob, classId, countryId) => {
+    const students = getStudents();
+    students.add(new Student(name, dob, classId, countryId));
+    updateStudents(students);
+  };
+
+  const deleteStudent = (id) => {
+    const students = getStudents();
+    students.remove(id);
   };
 
   const editStudent = (id, name, dob, classId, countryId) => {
-    const student = myStudents.getRecordById(id);
+    const students = getStudents();
+    const student = students.getRecordById(id);
     student.name = name;
     student.dob = dob;
     student.classId = classId;
     student.countryId = countryId;
+    updateStudents(students);
   };
 
+  const getAverageAge = (studentsTable) => {
+    return studentsTable.getAverageAge();
+  };
+
+  return { getAverageAge, getStudents, addStudent, deleteStudent, editStudent };
+})();
+
+/******************************** Controller *********************************/
+
+const appController = (() => {
+  const _setClassList = (classes) => {
+    myClasses = classes;
+  };
+
+  const _setCountryList = (countries) => {
+    myCountries = countries;
+  };
+
+  const _setStudentList = (students) => {
+    myStudents = students;
+  };
+
+  const getClassesFromStorage = () => {
+    return classRepository.getClasses();
+  };
+
+  const getCountriesFromStorage = () => {
+    return countryRepository.getCountries();
+  };
+
+  const getStudentsFromStorage = () => {
+    return studentsRepository.getStudents();
+  };
+
+  const addClass = (name) => {
+    classRepository.addClass(name);
+  };
+
+  const addCountry = (name) => {
+    countryRepository.addCountry(name);
+  };
+
+  const addStudent = (name, dob, classId, countryId) => {
+    studentsRepository.addStudent(name, dob, classId, countryId);
+  };
+
+  const deleteClass = (id) => {
+    classRepository.deleteClass(id);
+  };
+
+  const deleteCountry = (id) => {
+    countryRepository.deleteCountry(id);
+  };
+
+  const deleteStudent = (id) => {
+    studentsRepository.deleteStudent(id);
+  };
+
+  const editClass = (id, name) => {
+    classRepository.editClass(id, name);
+  };
+
+  const editCountry = (id, name) => {
+    countryRepository.editCountry(id, name);
+  };
+
+  const editStudent = (id, name, dob, classId, countryId) => {
+    studentsRepository.editStudent(id, name, dob, classId, countryId);
+  };
+
+  // init
+  let myClasses = getClassesFromStorage();
+  let myCountries = getCountriesFromStorage();
+  let myStudents = getStudentsFromStorage();
+
+  events.on('classes', _setClassList);
+  events.on('countries', _setCountryList);
+  events.on('students', _setStudentList);
+
   return {
+    myClasses,
+    myCountries,
+    myStudents,
     addClass,
     addCountry,
     addStudent,
-    deleteClass,
-    deleteCountry,
-    deleteStudent,
     editClass,
     editCountry,
     editStudent,
+    deleteClass,
+    deleteCountry,
+    deleteStudent,
   };
 })();
 
