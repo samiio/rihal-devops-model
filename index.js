@@ -425,7 +425,6 @@ const countryController = (() => {
   return { getAll, create, update, destroy, getCount };
 })();
 
-// TODO - ADD CLASS, REMOVE CLASS, ETC...
 const studentController = (() => {
   const getAll = () => {
     return studentsRepository.getAll();

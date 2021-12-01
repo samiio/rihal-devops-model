@@ -25,9 +25,11 @@ describe('Class construction', () => {
   test('construct class using one paramater', () => {
     expect(classA.constructor.name).toBe('Class');
   });
+
   test('construct class using two paramaters', () => {
     expect(classB.constructor.name).toBe('Class');
   });
+  
   test('class name', () => {
     expect(classA.name).toBe('Mathematics');
   });
@@ -102,7 +104,15 @@ describe('Student controller and count functions', () => {
     expect(studentController.getAll().table.length).toBe(1);
   });
 
-  test('Add class', () => {
-    
+  test('Update', () => {
+    studentController.create('Sami', '1996-11-06', [], []);
+    classController.create('Biology');
+
+    const bio = classController.getAll().getRecordById(2);
+    const sami = studentController.getAll().getRecordById(2);
+    studentController.update(sami.id, sami.name, sami.dob, [bio.id], []);
+
+    const updatedStudent = studentController.getAll().getRecordById(2);
+    expect(updatedStudent.classId.includes(2)).toBe(true);
   });
 });
