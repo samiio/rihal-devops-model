@@ -15,9 +15,9 @@ This package contains a Javascript file containing classes and modules to model 
   - Countries table (class)
   - Students table (class)
 - Controllers (IIFE modules):
-  - Classes controller
-  - Countries controller
-  - Students controller
+  - classController
+  - countryController
+  - studentController
 
 To avoid overengineering and for simplicities sake:
 
