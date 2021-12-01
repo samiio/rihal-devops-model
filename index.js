@@ -184,29 +184,34 @@ const classRepository = (() => {
   const getAll = () => {
     const classes = new Classes();
     const data = localStorage.getItem('classes');
-    if (data !== 'undefined') {
+    if (data !== 'undefined' && data) {
       classes.table = JSON.parse(data).table.map((aClass) =>
         jsonParser.JSONToClass(aClass)
       );
-      classes.setCounter(classes.table[classes.table.length - 1].id);
+
+      let counter =
+        classes.table.length > 0
+          ? classes.table[classes.table.length - 1].id
+          : 0;
+      classes.setCounter(counter);
     }
     return classes;
   };
 
   const create = (name) => {
-    const classes = getClasses();
+    const classes = getAll();
     classes.add(new Class(name));
     _update(classes);
   };
 
   const destroy = (id) => {
-    const classes = getClasses();
+    const classes = getAll();
     classes.remove(id);
     _update(classes);
   };
 
   const edit = (id, name) => {
-    const classes = getClasses();
+    const classes = getAll();
     const aClass = classes.getRecordById(id);
     aClass.name = name;
     _update(classes);
@@ -240,29 +245,34 @@ const countryRepository = (() => {
   const getAll = () => {
     const countries = new Countries();
     const data = localStorage.getItem('countries');
-    if (data !== 'undefined') {
+    if (data !== 'undefined' && data) {
       countries.table = JSON.parse(data).table.map((country) =>
         jsonParser.JSONToCountry(country)
       );
-      countries.setCounter(countries.table[countries.table.length - 1].id);
+
+      let counter =
+        countries.table.length > 0
+          ? countries.table[countries.table.length - 1].id
+          : 0;
+      countries.setCounter(counter);
     }
     return countries;
   };
 
   const create = (name) => {
-    const countries = getCountries();
+    const countries = getAll();
     countries.add(new Country(name));
     _update(countries);
   };
 
   const destroy = (id) => {
-    const countries = getCountries();
+    const countries = getAll();
     countries.remove(id);
     _update(countries);
   };
 
   const edit = (id, name) => {
-    const countries = getCountries();
+    const countries = getAll();
     const country = countries.getRecordById(id);
     country.name = name;
     _update(countries);
@@ -284,11 +294,15 @@ const studentsRepository = (() => {
   const getAll = () => {
     const students = new Students();
     const data = localStorage.getItem('students');
-    if (data !== 'undefined') {
+    if (data !== 'undefined' && data) {
       students.table = JSON.parse(data).table.map((student) =>
         jsonParser.JSONToStudent(student)
       );
-      students.setCounter(students.table[students.table.length - 1].id);
+      let counter =
+        students.table.length > 0
+          ? students.table[students.table.length - 1].id
+          : 0;
+      students.setCounter(counter);
     }
     return students;
   };
