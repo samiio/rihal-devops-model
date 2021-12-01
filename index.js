@@ -490,6 +490,7 @@ const studentController = (() => {
 })();
 
 module.exports = {
+  events,
   Class,
   Country,
   Student,

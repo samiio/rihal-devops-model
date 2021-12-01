@@ -1,6 +1,6 @@
 {
   "name": "rihal-devops-model",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Data modelling for the Rihal Deveops Assigment.",
   "main": "index.js",
   "scripts": {
@@ -18,16 +18,16 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^8.2.0",
+    "eslint": "^8.3.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-node": "^4.1.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "jest": "^27.3.1",
+    "jest": "^27.4.3",
     "jest-localstorage-mock": "^2.4.18",
-    "prettier": "^2.4.1"
+    "prettier": "^2.5.0"
   },
   "dependencies": {
     "moment": "^2.29.1"
