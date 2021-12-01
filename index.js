@@ -363,12 +363,20 @@ const classController = (() => {
     classRepository.edit(id, name);
   };
 
-  const getCount = (id, classTable, studentsTable) => {
-    return classRepository.getCount(id, classTable, studentsTable);
+  const getCount = (id) => {
+    return classRepository.getCount(
+      id,
+      classRepository.getAll(),
+      studentsRepository.getAll()
+    );
   };
 
-  const getAverageAge = (id, classTable, studentsTable) => {
-    return classRepository.getAverageAge(id, classTable, studentsTable);
+  const getAverageAge = (id) => {
+    return classRepository.getAverageAge(
+      id,
+      classRepository.getAll(),
+      studentsRepository.getAll()
+    );
   };
 
   return { getAll, create, destroy, update, getCount, getAverageAge };
@@ -392,8 +400,12 @@ const countryController = (() => {
     studentsRepository.removeAllInstancesOfCountry(id);
   };
 
-  const getCount = (id, countryTable, studentsTable) => {
-    return countryRepository.getCount(id, countryTable, studentsTable);
+  const getCount = (id) => {
+    return countryRepository.getCount(
+      id,
+      countryRepository.getAll(),
+      studentsRepository.getAll()
+    );
   };
 
   return { getAll, create, update, destroy, getCount };
