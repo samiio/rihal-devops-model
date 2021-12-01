@@ -42,4 +42,9 @@ import {
 } from rihal-devops-model;
 ```
 
+To subscribe to the lists:
+`events.on('classes', classTable)`
+`events.on('countries', countriesTable)`
+`events.on('students', studentsTable)`
+
 See `index.js` for more

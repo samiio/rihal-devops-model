@@ -1,3 +1,34 @@
+/*********************************** PubSub **********************************/
+
+/**
+ * A super-basic Javascript (publish subscribe) pattern
+ * src: https://gist.github.com/learncodeacademy/777349747d8382bfb722
+ */
+var events = {
+  events: {},
+  on: function (eventName, fn) {
+    this.events[eventName] = this.events[eventName] || [];
+    this.events[eventName].push(fn);
+  },
+  off: function (eventName, fn) {
+    if (this.events[eventName]) {
+      for (var i = 0; i < this.events[eventName].length; i++) {
+        if (this.events[eventName][i] === fn) {
+          this.events[eventName].splice(i, 1);
+          break;
+        }
+      }
+    }
+  },
+  emit: function (eventName, data) {
+    if (this.events[eventName]) {
+      this.events[eventName].forEach(function (fn) {
+        fn(data);
+      });
+    }
+  },
+};
+
 /******************************** Data objects *******************************/
 
 class Record {
@@ -178,7 +209,10 @@ const jsonParser = (() => {
 
 const classRepository = (() => {
   const _update = (classes) => {
-    localStorage.setItem('classes', JSON.stringify(classes));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('classes', JSON.stringify(classes));
+      events.emit('classes', classes);
+    }
   };
 
   const getAll = () => {
@@ -239,7 +273,10 @@ const classRepository = (() => {
 
 const countryRepository = (() => {
   const _update = (countries) => {
-    localStorage.setItem('countries', JSON.stringify(countries));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('countries', JSON.stringify(countries));
+      events.emit('countries', countries);
+    }
   };
 
   const getAll = () => {
@@ -288,7 +325,10 @@ const countryRepository = (() => {
 
 const studentsRepository = (() => {
   const _update = (students) => {
-    localStorage.setItem('students', JSON.stringify(students));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('students', JSON.stringify(students));
+      events.emit('students', students);
+    }
   };
 
   const getAll = () => {
