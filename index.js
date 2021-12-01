@@ -1,34 +1,3 @@
-/*********************************** PubSub **********************************/
-
-/**
- * A super-basic Javascript (publish subscribe) pattern
- * src: https://gist.github.com/learncodeacademy/777349747d8382bfb722
- */
-var events = {
-  events: {},
-  on: function (eventName, fn) {
-    this.events[eventName] = this.events[eventName] || [];
-    this.events[eventName].push(fn);
-  },
-  off: function (eventName, fn) {
-    if (this.events[eventName]) {
-      for (var i = 0; i < this.events[eventName].length; i++) {
-        if (this.events[eventName][i] === fn) {
-          this.events[eventName].splice(i, 1);
-          break;
-        }
-      }
-    }
-  },
-  emit: function (eventName, data) {
-    if (this.events[eventName]) {
-      this.events[eventName].forEach(function (fn) {
-        fn(data);
-      });
-    }
-  },
-};
-
 /******************************** Data objects *******************************/
 
 class Record {
@@ -208,9 +177,8 @@ const jsonParser = (() => {
 /******************************* Repositories ********************************/
 
 const classRepository = (() => {
-  const _updateClasses = (classes) => {
+  const _update = (classes) => {
     localStorage.setItem('classes', JSON.stringify(classes));
-    events.emit('classes', getClasses);
   };
 
   const getAll = () => {
@@ -228,21 +196,20 @@ const classRepository = (() => {
   const create = (name) => {
     const classes = getClasses();
     classes.add(new Class(name));
-    _updateClasses(classes);
+    _update(classes);
   };
 
   const destroy = (id) => {
     const classes = getClasses();
     classes.remove(id);
-    _updateClasses(classes);
-    // myStudents.removeAllInstancesOfClass(id);
+    _update(classes);
   };
 
   const edit = (id, name) => {
     const classes = getClasses();
     const aClass = classes.getRecordById(id);
     aClass.name = name;
-    _updateClasses(classes);
+    _update(classes);
   };
 
   const getCount = (targetId, classTable, studentsTable) => {
@@ -266,9 +233,8 @@ const classRepository = (() => {
 })();
 
 const countryRepository = (() => {
-  const _updateCountries = (countries) => {
+  const _update = (countries) => {
     localStorage.setItem('countries', JSON.stringify(countries));
-    events.emit('countries', getCountries);
   };
 
   const getAll = () => {
@@ -286,21 +252,20 @@ const countryRepository = (() => {
   const create = (name) => {
     const countries = getCountries();
     countries.add(new Country(name));
-    _updateCountries(countries);
+    _update(countries);
   };
 
   const destroy = (id) => {
     const countries = getCountries();
     countries.remove(id);
-    _updateCountries(countries);
-    // myStudents.removeAllInstancesOfCountry(id);
+    _update(countries);
   };
 
   const edit = (id, name) => {
     const countries = getCountries();
     const country = countries.getRecordById(id);
     country.name = name;
-    _updateCountries(countries);
+    _update(countries);
   };
 
   const getCount = (targetId, countryTable, studentsTable) => {
@@ -314,7 +279,6 @@ const countryRepository = (() => {
 const studentsRepository = (() => {
   const _update = (students) => {
     localStorage.setItem('students', JSON.stringify(students));
-    events.emit('students', getStudents);
   };
 
   const getAll = () => {
@@ -356,7 +320,27 @@ const studentsRepository = (() => {
     return students.getAverageAge();
   };
 
-  return { getAll, create, destory, edit, getAverageAge };
+  const removeAllInstancesOfClass = (id) => {
+    const students = getAll();
+    students.removeAllInstancesOfClass(id);
+    _update();
+  };
+
+  const removeAllInstancesOfCountry = (id) => {
+    const students = getAll();
+    students.removeAllInstancesOfCountry(id);
+    _update();
+  };
+
+  return {
+    getAll,
+    create,
+    destory,
+    edit,
+    getAverageAge,
+    removeAllInstancesOfClass,
+    removeAllInstancesOfCountry,
+  };
 })();
 
 /******************************** Controllers ********************************/
@@ -372,6 +356,7 @@ const classController = (() => {
 
   const destroy = (id) => {
     classRepository.destroy(id);
+    studentsRepository.removeAllInstancesOfClass(id);
   };
 
   const update = (id, name) => {
@@ -404,6 +389,7 @@ const countryController = (() => {
 
   const destroy = (id) => {
     countryRepository.destroy(id);
+    studentsRepository.removeAllInstancesOfCountry(id);
   };
 
   const getCount = (id, countryTable, studentsTable) => {
