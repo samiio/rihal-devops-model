@@ -425,6 +425,7 @@ const countryController = (() => {
   return { getAll, create, update, destroy, getCount };
 })();
 
+// TODO - ADD CLASS, REMOVE CLASS, ETC...
 const studentController = (() => {
   const getAll = () => {
     return studentsRepository.getAll();
@@ -449,12 +450,14 @@ const studentController = (() => {
   return { getAll, create, destory, update, getAverageAge };
 })();
 
-// module.exports = {
-//   Class,
-//   Country,
-//   Student,
-//   Classes,
-//   Countries,
-//   Students,
-//   appController,
-// };
+module.exports = {
+  Class,
+  Country,
+  Student,
+  Classes,
+  Countries,
+  Students,
+  classController,
+  countryController,
+  studentController,
+};

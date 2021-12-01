@@ -1,47 +1,19 @@
 const {
   Class,
-  Country,
-  Student,
-  Classes,
-  Countries,
-  Students,
+  classController,
+  countryController,
+  studentController,
 } = require('../index');
 
-// Classes
-const bio = new Class('Biology');
-const math = new Class('Mathematics');
-const myClasses = new Classes();
-myClasses.add(bio);
-myClasses.add(math);
+require('jest-localstorage-mock');
 
-// Countries
-const uk = new Country('United Kingdom');
-const om = new Country('Oman');
-const fr = new Country('France');
-const countries = new Countries();
-countries.add(uk);
-countries.add(om);
-countries.add(fr);
-
-// Students
-const mo = new Student('Mohammed', '1996-01-01');
-const jack = new Student('Jack', '1995-01-01');
-const ali = new Student('Ali', '1994-01-01');
-
-mo.addClass(bio.id);
-mo.addCountry(om.id);
-
-jack.addClass(bio.id);
-jack.addCountry(uk.id);
-jack.addCountry(fr.id);
-
-ali.addClass(bio.id);
-ali.addCountry(om.id);
-
-const students = new Students();
-students.add(mo);
-students.add(jack);
-students.add(ali);
+/**
+ * Setup
+ */
+beforeEach(() => {
+  localStorage.clear();
+  jest.clearAllMocks();
+});
 
 /**
  * Class construction
@@ -49,7 +21,6 @@ students.add(ali);
 describe('Class construction', () => {
   const classA = new Class('Mathematics');
   const classB = new Class('Biology', 2);
-  const classC = new Class('Chemistry');
 
   test('construct class using one paramater', () => {
     expect(classA.constructor.name).toBe('Class');
@@ -60,22 +31,78 @@ describe('Class construction', () => {
   test('class name', () => {
     expect(classA.name).toBe('Mathematics');
   });
-  test('class id', () => {
-    expect(classC.id).toBe(3);
+});
+
+/**
+ * Class controller
+ */
+describe('Class controller', () => {
+  test('Get empty table', () => {
+    const classes = classController.getAll();
+    expect(classes.table.length).toBe(0);
+  });
+
+  test('Create and get nonempty table', () => {
+    classController.create('Biology');
+    expect(classController.getAll().table.length).toBe(1);
+  });
+
+  test('Create and destroy', () => {
+    classController.create('Biology');
+    classController.destroy(2);
+    expect(classController.getAll().table.length).toBe(0);
+  });
+
+  test('Create and update', () => {
+    classController.create('Biology');
+    classController.update(1, 'Chemistry');
+    const chem = classController.getAll().getRecordById(1);
+    expect(chem.name).toBe('Chemistry');
   });
 });
 
 /**
- * Record functions
+ * Country controller
  */
-describe('Record functions', () => {
-  test('number of students in class', () => {
-    expect(bio.getCount(students.table)).toBe(3);
+describe('Country controller', () => {
+  test('Get empty table', () => {
+    const countries = countryController.getAll();
+    expect(countries.table.length).toBe(0);
   });
-  test('number of students from a country', () => {
-    expect(om.getCount(students.table)).toBe(2);
+
+  test('Create and get nonempty table', () => {
+    countryController.create('Oman');
+    expect(countryController.getAll().table.length).toBe(1);
   });
-  test('number of students from a country', () => {
-    expect(om.getCount(students.table)).toBe(2);
+
+  test('Create and destroy', () => {
+    countryController.create('Oman');
+    countryController.destroy(2);
+    expect(countryController.getAll().table.length).toBe(0);
+  });
+
+  test('Create and update', () => {
+    countryController.create('Oman');
+    countryController.update(1, 'UK');
+    const uk = countryController.getAll().getRecordById(1);
+    expect(uk.name).toBe('UK');
+  });
+});
+
+/**
+ * Student controller
+ */
+describe('Student controller and count functions', () => {
+  test('Get empty table', () => {
+    expect(studentController.getAll().table.length).toBe(0);
+  });
+
+  test('Create and get nonempty table', () => {
+    studentController.create('Sami', '1996-11-06', [], []);
+    expect(studentController.getAll().table.length).toBe(1);
+  });
+
+  test('Add class', () => {
+    
   });
 });
