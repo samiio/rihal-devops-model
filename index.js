@@ -136,11 +136,11 @@ class Table {
   }
 
   remove(id) {
-    this.table = this.table.filter((el) => el.id !== id);
+    this.table = this.table.filter((el) => el.id != id);
   }
 
   getRecordById(id) {
-    return this.table.find((el) => el.id === id);
+    return this.table.find((el) => el.id == id);
   }
 }
 
