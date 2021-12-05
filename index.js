@@ -463,15 +463,15 @@ const studentController = (() => {
   return { getAll, create, destory, update, getAverageAge };
 })();
 
-// module.exports = {
-//   events,
-//   Class,
-//   Country,
-//   Student,
-//   Classes,
-//   Countries,
-//   Students,
-//   classController,
-//   countryController,
-//   studentController,
-// };
+module.exports = {
+  events,
+  Class,
+  Country,
+  Student,
+  Classes,
+  Countries,
+  Students,
+  classController,
+  countryController,
+  studentController,
+};
