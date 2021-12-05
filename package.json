@@ -1,6 +1,6 @@
 {
   "name": "rihal-devops-model",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "description": "Data modelling for the Rihal Deveops Assigment.",
   "main": "index.js",
   "scripts": {

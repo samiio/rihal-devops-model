@@ -83,6 +83,19 @@ class Country extends Record {
       );
     }, 0);
   }
+
+  getAverageAge(studentsTable) {
+    // filter to find students from country
+    const countryStudents = studentsTable.filter((student) => {
+      return student.countryId.includes(this.id);
+    });
+
+    // reduce to find average age
+    const totalYears = countryStudents.reduce((total, student) => {
+      return total + student.getAge();
+    }, 0);
+    return totalYears / countryStudents.length;
+  }
 }
 
 class Student extends Record {
