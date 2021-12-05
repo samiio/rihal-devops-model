@@ -159,20 +159,6 @@ class Students extends Table {
       student.countryId = student.countryId.filter((el) => el !== id);
     });
   }
-
-  getCountryString(id, countries) {
-    const student = this.table.getRecordById(id);
-    const names = student.countryId.map(
-      (id) => countries.getRecordById(id).name
-    );
-    return names.join(', ');
-  }
-
-  getClassString(id, classes) {
-    const student = this.table.getRecordById(id);
-    const names = student.countryId.map((id) => classes.getRecordById(id).name);
-    return names.join(', ');
-  }
 }
 
 /******************************** JSON Parser ********************************/
@@ -374,16 +360,6 @@ const studentsRepository = (() => {
     _update();
   };
 
-  const getCountryString = (id, countries) => {
-    const students = getAll();
-    students.getCountryString(id, countries);
-  };
-
-  const getClassString = (id, classes) => {
-    const students = getAll();
-    students.getClassString(id, classes);
-  };
-
   return {
     getAll,
     create,
@@ -392,8 +368,6 @@ const studentsRepository = (() => {
     getAverageAge,
     removeAllInstancesOfClass,
     removeAllInstancesOfCountry,
-    getCountryString,
-    getClassString,
   };
 })();
 
@@ -486,28 +460,12 @@ const studentController = (() => {
     return studentsRepository.getAverageAge();
   };
 
-  const getCountryString = (studentId) => {
-    return studentsRepository.getCountryString(
-      studentId,
-      countryController.getAll()
-    );
-  };
-
-  const getClassString = (studentId) => {
-    return studentsRepository.getClassString(
-      studentId,
-      classController.getAll()
-    );
-  };
-
   return {
     getAll,
     create,
     destory,
     update,
     getAverageAge,
-    getCountryString,
-    getClassString,
   };
 })();
 
