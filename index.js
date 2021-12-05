@@ -86,7 +86,7 @@ class Country extends Record {
 }
 
 class Student extends Record {
-  constructor(name, dob, classId, countryId, id = null) {
+  constructor(name, dob, id, classId = [], countryId = []) {
     super(name, id);
     this.dob = dob;
     this.classId = classId;
@@ -463,15 +463,15 @@ const studentController = (() => {
   return { getAll, create, destory, update, getAverageAge };
 })();
 
-module.exports = {
-  events,
-  Class,
-  Country,
-  Student,
-  Classes,
-  Countries,
-  Students,
-  classController,
-  countryController,
-  studentController,
-};
+// module.exports = {
+//   events,
+//   Class,
+//   Country,
+//   Student,
+//   Classes,
+//   Countries,
+//   Students,
+//   classController,
+//   countryController,
+//   studentController,
+// };
