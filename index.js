@@ -86,7 +86,7 @@ class Country extends Record {
 }
 
 class Student extends Record {
-  constructor(name, dob, id, classId = [], countryId = []) {
+  constructor(name, dob, classId, countryId, id = null) {
     super(name, id);
     this.dob = dob;
     this.classId = classId;
@@ -95,26 +95,6 @@ class Student extends Record {
 
   getAge() {
     return moment().diff(this.dob, 'years');
-  }
-
-  addClass(id) {
-    if (!this.classId.includes(id)) this.classId.push(id);
-  }
-
-  removeClass(id) {
-    if (this.classId.includes(id)) {
-      this.classId = this.classId.filter((el) => el !== id);
-    }
-  }
-
-  addCountry(id) {
-    if (!this.countryId.includes(id)) this.countryId.push(id);
-  }
-
-  removeCountry(id) {
-    if (this.countryId.includes(id)) {
-      this.countryId = this.countryId.filter((el) => el !== id);
-    }
   }
 }
 
@@ -209,10 +189,8 @@ const jsonParser = (() => {
 
 const classRepository = (() => {
   const _update = (classes) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('classes', JSON.stringify(classes));
-      events.emit('classes', classes);
-    }
+    localStorage.setItem('classes', JSON.stringify(classes));
+    events.emit('classes', classes);
   };
 
   const getAll = () => {
@@ -273,10 +251,8 @@ const classRepository = (() => {
 
 const countryRepository = (() => {
   const _update = (countries) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('countries', JSON.stringify(countries));
-      events.emit('countries', countries);
-    }
+    localStorage.setItem('countries', JSON.stringify(countries));
+    events.emit('countries', countries);
   };
 
   const getAll = () => {
@@ -325,10 +301,8 @@ const countryRepository = (() => {
 
 const studentsRepository = (() => {
   const _update = (students) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('students', JSON.stringify(students));
-      events.emit('students', students);
-    }
+    localStorage.setItem('students', JSON.stringify(students));
+    events.emit('students', students);
   };
 
   const getAll = () => {
@@ -489,15 +463,15 @@ const studentController = (() => {
   return { getAll, create, destory, update, getAverageAge };
 })();
 
-module.exports = {
-  events,
-  Class,
-  Country,
-  Student,
-  Classes,
-  Countries,
-  Students,
-  classController,
-  countryController,
-  studentController,
-};
+// module.exports = {
+//   events,
+//   Class,
+//   Country,
+//   Student,
+//   Classes,
+//   Countries,
+//   Students,
+//   classController,
+//   countryController,
+//   studentController,
+// };
